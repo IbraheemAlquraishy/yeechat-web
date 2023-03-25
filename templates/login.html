@@ -5,16 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='login.css')}}">
-    
+    <link rel="stylesheet" href="/static/login.css">
+    <script src="/static/func.js"></script>
     <title>Login</title>
 </head>
 <body>
-    <div class="login">
+    <div class="login" id="login">
         <h1 id="title">LOGIN</h1>
         <div class="inputs">
         <input class="usern" type="text" name="" id="name" placeholder="Username" required>
+        <input type="text" id="showname" placeholder="show name" required>
         <input class="userp" type="password" name="" id="password" placeholder="Password" required >
-        </div>
+        <input type="password" name="" id="confirm_password" placeholder="confirm password" required>
+    </div>
         <div class="entering">
             <script >let loginbtn = document.getElementsByClassName('subm');
                 let signupbtn = document.getElementsByClassName("change");
@@ -31,8 +34,8 @@
                         })
                     })
                 }</script>
-            <button class="subm" onclick="sign()">Login</button>
-            <button class="change" >sign up</button>
+            <button class="subm" id="loginbtn" onclick="sign()">Login</button>
+            <button class="change" id="signup" onclick="sbtn()" >sign up</button>
         </div>
         </div>
 

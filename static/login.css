@@ -15,22 +15,25 @@ body{
     border-radius: 10px;
     width: 300px;
     height: 300px;
+    box-shadow: #84878a 0px 0px 10px 1px;
 }
 .login h1{
     text-align: center;
     color: #05386b;
 }
 .login input{
-    width: 95%;
+    width: 94%;
     padding: 10px;
     background-color: #46c57f;
-    color: #edf5e1;
+    color: #05386b;
+    font-size: 16px;
     border: 0;
     margin-top: 25px;
     max-height: 15px;
     border-bottom: 2px solid #05386b;
     transition: max-height 0.5s;
     overflow: hidden;
+    border-radius: 5px;
 }
 ::placeholder{
     color: #05386b;
@@ -58,4 +61,7 @@ body{
 .change{
     width: 100px;
     padding: 10px;
+}
+#showname,#confirm_password{
+    display: none;
 }
