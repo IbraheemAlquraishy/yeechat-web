@@ -5,20 +5,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='login.css')}}">
-    <script src="{{url_for('static',filename='func.js')}}"></script>
+    
     <title>Login</title>
 </head>
 <body>
     <div class="login">
         <h1 id="title">LOGIN</h1>
         <div class="inputs">
-        <input class="usern" type="text" name="" placeholder="Username" required>
-        <input class="userp" type="password" name="" placeholder="Password" required >
+        <input class="usern" type="text" name="" id="name" placeholder="Username" required>
+        <input class="userp" type="password" name="" id="password" placeholder="Password" required >
         </div>
         <div class="entering">
-            <button class="subm">Login</button>
-            <button class="change" onclick="">sign up</button>
+            <script >let loginbtn = document.getElementsByClassName('subm');
+                let signupbtn = document.getElementsByClassName("change");
+                let username = document.getElementsByClassName('usern')[0].value;
+                let title = document.getElementsByClassName("title")
+                let pas=document.getElementById('password').value
+                function sign(){
+                    fetch("/../login",{
+                        method:"POST"
+                        ,body:({
+                            name:username,password:pas
+                        }),headers:({
+                            "Content-Type": "application/json"
+                        })
+                    })
+                }</script>
+            <button class="subm" onclick="sign()">Login</button>
+            <button class="change" >sign up</button>
         </div>
         </div>
+
+
+        
 </body>
 </html>

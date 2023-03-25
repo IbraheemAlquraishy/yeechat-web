@@ -1,9 +1,14 @@
 let loginbtn = document.getElementsByClassName('subm');
 let signupbtn = document.getElementsByClassName("change");
-let username = document.getElementsByClassName('usern');
+let username = document.getElementsByClassName('usern')[0].innerHTML;
 let title = document.getElementsByClassName("title")
-
-signupbtn.onclick = function(){
-    username.style.maxHieght = "0";
-    title.innerHTML = "SIGN UP";
+let pas=document.getElementById('password').innerHTML
+function sign(){
+    fetch("/../login",{
+        body:({
+            name:username,password:pas
+        }),headers:({
+            "Content-Type": "application/json"
+        })
+    })
 }
