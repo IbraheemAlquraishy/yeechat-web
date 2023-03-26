@@ -34,9 +34,9 @@ function login() {
     .then(response => response.json())
     .then(data => {
         if(data["message"]=="ok"){
-            window.location.href="/"
+            window.location.href="/chats"
         }else{
-            document.write("wrong")
+            console.log(data);
         }
     })
 }
@@ -49,7 +49,7 @@ function sign() {
     const body = { name, password };
     
     // Make the POST request using the Fetch API
-    fetch('/../sign', {
+    fetch('/../signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -57,7 +57,7 @@ function sign() {
     .then(response => response.json())
     .then(data => {
         if(data["message"]=="done"){
-            window.location.href="/"
+            window.location.href="/chats"
         }else{
             document.write("taken")
         }

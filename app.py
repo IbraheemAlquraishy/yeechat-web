@@ -16,6 +16,11 @@ app.config['SECRET_KEY']='hihihihihiekjfakldjflka'
 
 db=SQLAlchemy(app)
 
+user_room=db.Table('user_room',
+    db.Column('user_id',db.Integer,db.ForeignKey('user.id')),
+    db.Column('room_id',db.Integer,db.ForeignKey('room.id'))
+)
+
 class User(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(124),unique=True,nullable=False)
@@ -23,10 +28,15 @@ class User(db.Model,UserMixin):
     img=db.Column(db.String(200),nullable=False,default='uploads/default.default.png')
     #publickey=db.Column(db.String(1024),nullable=False)
     #mes=db.relationship('Message',lazy=True)
-    
+    joined=db.relationship('Room',secondary=user_room,backref='members')
 
     def __repr__(self):
         return f"user('{self.name}','{self.publickey}')"
+
+class Room(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String)
+
 
 if not path.exists("yeechat-web/database.db"):
     with app.app_context():   
@@ -71,6 +81,12 @@ def getsignup():
         return '{"message":"done"}'
     else:
         return '{"message":"taken"}'
+
+@app.route("/chats")
+@login_required
+def chat():
+    return render_template("chats.html",user=current_user)
+
 @app.route("/logout")
 @login_required
 def logout():
