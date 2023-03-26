@@ -1,4 +1,5 @@
 from flask import Flask,redirect,url_for
+import json
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from flask_login import UserMixin
@@ -21,6 +22,7 @@ user_room=db.Table('user_room',
     db.Column('room_id',db.Integer,db.ForeignKey('room.id'))
 )
 
+
 class User(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(124),unique=True,nullable=False)
@@ -37,6 +39,11 @@ class Room(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String)
 
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Room):
+            return {"id": obj.id, "name": obj.name}
+        return super().default(obj)
 
 if not path.exists("yeechat-web/database.db"):
     with app.app_context():   
@@ -86,6 +93,33 @@ def getsignup():
 @login_required
 def chat():
     return render_template("chats.html",user=current_user)
+
+@app.route("/chats/create",methods=['POST'])
+@login_required
+def create():
+    name=request.json.get("name")
+    user=request.json.get("user")
+    if User.query.filter_by(name=user).first()==None:
+        return '{"message":"taken"}'
+    else:
+        room=Room(name=name)
+        db.session.add(room)
+        db.session.commit()
+        current_user.joined.append(room)
+        db.session.commit()
+        u=User.query.filter_by(name=user).first()
+        u.joined.append(room)
+        return '{"message":"done"}'
+
+@app.route("/chats/available",methods=['GET'])
+@login_required
+def available():
+    
+    rooms_id=current_user.joined
+    body='{"rooms":'
+    body_json=json.dumps(rooms_id,cls=MyEncoder)
+    body+=body_json
+    return body
 
 @app.route("/logout")
 @login_required

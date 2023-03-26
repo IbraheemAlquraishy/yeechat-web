@@ -8,7 +8,17 @@
 </head>
 <body>
     hello {{user.name}}
+    
     <a herf="/logout">logout</a>
+    <br>
+    <form id="myForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="user">name of user:</label>
+        <input type="text" id="user" name="user"><br><br>
+        <button type="button" onclick="create()">create</button>
+      </form>
 
+      <script src="/static/func.js"></script>
 </body>
 </html>

@@ -74,3 +74,23 @@ function sbtn(){
     document.getElementById('title').innerHTML="SIGN UP";
 
 }
+
+function create(){
+    const name = document.getElementById('name').value;
+    const user = document.getElementById('user').value;
+    
+    const body = { name, user };
+    fetch('/../chats/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if(data["message"]=="done"){
+              console.log("done")
+          }else{
+              console.log("no such user")
+          }
+      })
+}
