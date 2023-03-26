@@ -17,7 +17,53 @@ function sign(){
     })
 
 }
-
+function login() {
+    // Get the values of the name and password input fields
+    const name = document.getElementById('name').value;
+    const password = document.getElementById('password').value;
+    
+    // Create an object to represent the JSON body of the POST request
+    const body = { name, password };
+    
+    // Make the POST request using the Fetch API
+    fetch('/../login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data["message"]=="ok"){
+            window.location.href="/"
+        }else{
+            document.write("wrong")
+        }
+    })
+}
+function sign() {
+    // Get the values of the name and password input fields
+    const name = document.getElementById('name').value;
+    const password = document.getElementById('password').value;
+    
+    // Create an object to represent the JSON body of the POST request
+    const body = { name, password };
+    
+    // Make the POST request using the Fetch API
+    fetch('/../sign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data["message"]=="done"){
+            window.location.href="/"
+        }else{
+            document.write("taken")
+        }
+    })
+    
+}
 function changer(){
     
 }
