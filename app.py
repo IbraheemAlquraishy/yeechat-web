@@ -106,9 +106,9 @@ def create():
         db.session.add(room)
         db.session.commit()
         current_user.joined.append(room)
-        db.session.commit()
         u=User.query.filter_by(name=user).first()
         u.joined.append(room)
+        db.session.commit()
         return '{"message":"done"}'
 
 @app.route("/chats/available",methods=['GET'])
