@@ -18,7 +18,18 @@
         <input type="text" id="user" name="user"><br><br>
         <button type="button" onclick="create()">create</button>
       </form>
-
+      <div id="c">
+        <h1>chats</h1>
+        <script>fetch("/../chats/available",{method:'GET'}).then((post)=>{
+            return post.json()
+        }).then((data)=>{
+            let d=document.getElementById('c')
+            for(let i=0;i<data.rooms.length;i++){
+                d.innerText+=data.rooms[i].name;
+            }
+            
+        })</script>
+      </div>
       <script src="/static/func.js"></script>
 </body>
 </html>

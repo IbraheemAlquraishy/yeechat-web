@@ -100,7 +100,7 @@ def create():
     name=request.json.get("name")
     user=request.json.get("user")
     if User.query.filter_by(name=user).first()==None:
-        return '{"message":"taken"}'
+        return '{"message":"no such user"}'
     else:
         room=Room(name=name)
         db.session.add(room)
@@ -118,7 +118,7 @@ def available():
     rooms_id=current_user.joined
     body='{"rooms":'
     body_json=json.dumps(rooms_id,cls=MyEncoder)
-    body+=body_json
+    body+=body_json+'}'
     return body
 
 @app.route("/logout")
