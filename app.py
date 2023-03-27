@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for
+from flask import Flask,redirect,url_for,send_file
 import json
 from flask_sqlalchemy import SQLAlchemy
 import datetime
@@ -27,7 +27,7 @@ class User(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(124),unique=True,nullable=False)
     password=db.Column(db.String(200),nullable=False)
-    img=db.Column(db.String(200),nullable=False,default='uploads/default.default.png')
+    img=db.Column(db.String(200),nullable=False,default='uploads/default.png')
     #publickey=db.Column(db.String(1024),nullable=False)
     #mes=db.relationship('Message',lazy=True)
     joined=db.relationship('Room',secondary=user_room,backref='members')
@@ -126,7 +126,10 @@ def available():
 def logout():
     logout_user()
     return redirect(url_for('views.home'))
-
+@app.route("/uploads/<url_endpoint>")
+@login_required
+def getimg(url_endpoint):
+    return send_file('uploads/'+url_endpoint)
 if __name__=='__main__':
     
     app.run(debug=True,port=3000)
