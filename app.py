@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for,send_file
+from flask import Flask,redirect,url_for,send_file,abort
 import json
 from flask_sqlalchemy import SQLAlchemy
 import datetime
@@ -9,6 +9,8 @@ from flask import request
 from views import views
 from flask_login import login_user,logout_user,login_required,current_user,login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+
 
 app=Flask(__name__)
 app.register_blueprint(views,url_prefix="/")
@@ -33,7 +35,7 @@ class User(db.Model,UserMixin):
     joined=db.relationship('Room',secondary=user_room,backref='members')
 
     def __repr__(self):
-        return f"user('{self.name}','{self.publickey}')"
+        return f"user('{self.name}','{self.id}')"
 
 class Room(db.Model):
     id=db.Column(db.Integer,primary_key=True)
@@ -56,6 +58,16 @@ l.init_app(app)
 @l.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+def haveperm(rid):
+    room=Room.query.filter_by(id=rid).first()
+    for i in range(len(room.members)):
+       if current_user.id ==room.members[i].id:
+           return True
+    return False
+    
+
+
 
 #this is here and not in views because of an error 
 @app.route("/login",methods=['GET','POST'])
@@ -114,7 +126,6 @@ def create():
 @app.route("/chats/available",methods=['GET'])
 @login_required
 def available():
-    
     rooms_id=current_user.joined
     body='{"rooms":'
     body_json=json.dumps(rooms_id,cls=MyEncoder)
@@ -130,6 +141,15 @@ def logout():
 @login_required
 def getimg(url_endpoint):
     return send_file('uploads/'+url_endpoint)
+
+@app.route("/chats/<url_endpoint>")
+@login_required
+def chatend(url_endpoint):
+    if haveperm(url_endpoint):
+        return '{"message":"ok"}'
+    else:
+        abort(403)
+
 if __name__=='__main__':
     
     app.run(debug=True,port=3000)
