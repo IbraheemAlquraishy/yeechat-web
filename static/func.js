@@ -22,10 +22,10 @@ function login() {
     const name = document.getElementById('name').value;
     const password = document.getElementById('password').value;
     //edit on css
-    document.getElementById('showname').style.display='block';
-    document.getElementById('confirm_password').style.display='block';
-    document.getElementById("login").style.height="400px";
-    document.getElementById('title').innerHTML="SIGN UP";
+    //document.getElementById('showname').style.display='block';
+    //document.getElementById('confirm_password').style.display='block';
+    //document.getElementById("login").style.height="400px";
+    //document.getElementById('title').innerHTML="SIGN UP";
     // Create an object to represent the JSON body of the POST request
     const body = { name, password };
     
