@@ -11,6 +11,7 @@
     
     <a herf="/logout">logout</a>
     <br>
+    <p id="error"></p>
     <form id="myForm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name"><br><br>
@@ -25,7 +26,8 @@
         }).then((data)=>{
             let d=document.getElementById('c')
             for(let i=0;i<data.rooms.length;i++){
-                d.innerText+=data.rooms[i].name;
+                d.innerText+=data.rooms[i].name+"   ";
+                
             }
             
         })</script>

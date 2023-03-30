@@ -82,8 +82,8 @@ function create(){
       .then(data => {
           if(data["message"]=="done"){
               console.log("done")
-          }else{
-              console.log("no such user")
+            }else{
+              document.getElementById("error").innerHTML="no such user";
           }
       })
 }

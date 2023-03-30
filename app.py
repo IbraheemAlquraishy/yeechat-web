@@ -10,13 +10,13 @@ from views import views
 from flask_login import login_user,logout_user,login_required,current_user,login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-
+from flask_socketio import SocketIO,join_room,leave_room,send
 
 app=Flask(__name__)
 app.register_blueprint(views,url_prefix="/")
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
 app.config['SECRET_KEY']='hihihihihiekjfakldjflka'
-
+socketiO=SocketIO(app)
 db=SQLAlchemy(app)
 
 user_room=db.Table('user_room',
@@ -45,6 +45,8 @@ class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Room):
             return {"id": obj.id, "name": obj.name}
+        elif isinstance(obj, User):
+            return {"name":obj.name,"photo":obj.img}
         return super().default(obj)
 
 if not path.exists("yeechat-web/database.db"):
@@ -146,12 +148,35 @@ def getimg(url_endpoint):
 @login_required
 def chatend(url_endpoint):
     if haveperm(url_endpoint):
-        return '{"message":"ok"}'
+        return render_template("test.html")
     else:
         abort(403)
 
+
+@socketiO.on("connect")
+def connect(auth):
+    return "ok"
+@socketiO.on("connect_chat")
+def connect_chat(js):
+    print("connect to" +js["chat_id"])
+    if haveperm(js["chat_id"]):
+        room=Room.query.filter_by(id=js["chat_id"]).first()
+        join_room(room)
+        body_json=json.dumps(room.members,cls=MyEncoder)
+        socketiO.emit("chat_members",{"users":body_json})
+
+@socketiO.on('message')
+def remessage(js):
+    print(js['data'])
+
+@socketiO.on("client_message")
+def disconnect(js):
+    room=Room.query.filter_by(id=js["chat_id"]).first()
+    leave_room(room)
+    print("leave "+room.id)
+
 if __name__=='__main__':
     
-    app.run(debug=True,port=3000)
+    socketiO.run(app,debug=True,port=3000)
 
 
