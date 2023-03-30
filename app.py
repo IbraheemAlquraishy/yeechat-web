@@ -28,6 +28,7 @@ user_room=db.Table('user_room',
 class User(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(124),unique=True,nullable=False)
+    username=db.Column(db.String,nullable=False)
     password=db.Column(db.String(200),nullable=False)
     img=db.Column(db.String(200),nullable=False,default='uploads/default.png')
     #publickey=db.Column(db.String(1024),nullable=False)
@@ -46,7 +47,7 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, Room):
             return {"id": obj.id, "name": obj.name}
         elif isinstance(obj, User):
-            return {"name":obj.name,"photo":obj.img}
+            return {"name":obj.username,"photo":obj.img}
         return super().default(obj)
 
 if not path.exists("yeechat-web/database.db"):
@@ -93,9 +94,10 @@ def login():
 @app.route("/signup",methods=['POST'])
 def getsignup():
     name=request.json.get('name')
+    username=request.json.get('username')
     passwrd=request.json.get('password')
     if User.query.filter_by(name=name).first()==None:
-        user=User(name=name,password=generate_password_hash(passwrd,method='sha256'))
+        user=User(name=name,username=username,password=generate_password_hash(passwrd,method='sha256'))
         db.session.add(user)
         db.session.commit()
         login_user(user,remember=True)

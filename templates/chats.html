@@ -7,9 +7,9 @@
     <title>chat</title>
 </head>
 <body>
-    hello {{user.name}}<img src="{{user.img}}">
+    hello {{user.username}}<img src="{{user.img}}">
     
-    <a herf="/logout">logout</a>
+    <a href="/logout">logout</a>
     <br>
     <p id="error"></p>
     <form id="myForm">
@@ -25,12 +25,22 @@
             return post.json()
         }).then((data)=>{
             let d=document.getElementById('c')
+            console.log(data)
             for(let i=0;i<data.rooms.length;i++){
-                d.innerText+=data.rooms[i].name+"   ";
-                
+                var IO = document.createElement("input")
+                d.appendChild(IO)
+                IO.setAttribute("type","button")
+                IO.setAttribute("onclick","e("+data.rooms[i].id+")")
+                IO.value=data.rooms[i].name
+                var b= document.createElement("br")
+                d.appendChild(b)
             }
             
-        })</script>
+        })
+        function e(ID){
+            location.href = "/chats/" + ID;
+        }
+        </script>
       </div>
       <script src="/static/func.js"></script>
 </body>
