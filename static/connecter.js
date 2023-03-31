@@ -6,30 +6,37 @@
         
         // get the last path
         var lastPath = parts[parts.length - 1];
-        
-        // log the last path
-                console.log(lastPath);
-                var socketio=io();
-                socketio.on('connect', function() {
+        console.log(lastPath);
+        var socketio=io();
+        socketio.on('connect', function() {
                 console.log('Connected to server');
           
-          // Send data to the server
+          
                 socketio.emit('connect_chat', {'chat_id':lastPath});
         
                 socketio.on("chat_members",function(data) {
-                        console.log('Received data:', data);})
-        
-          
-        
+                        console.log('Received data:', data);
+                        console.log(data.messages)
+                        message=JSON.parse(data.messages)
+                        for(let i=0;i<message.length;i++){
+                        let chat=document.getElementById("chat")
+                        let mes=document.createElement('p')
+                        mes.innerText=message[i].name+"      "+message[i].data+"      "+message[i].time
+                        chat.appendChild(mes)
+                        }
+                    })
         });
-        ocketio.on('disconnect', function() {
-            // Create a JSON object
-            var data = {"chat_id": lastPath};
+        socketio.on('message',function(m){
+            message=JSON.parse(m)
+            let chat=document.getElementById("chat")
+            let mes=document.createElement('p')
+            mes.innerText=message.name+"      "+message.data+"      "+message.time
+            chat.appendChild(mes)
+        })
+        socketio.on('disconnect', function() {
             
-            // Send the JSON object to the server
-            socketio.emit('client_message', data);
         });
         function sendmessage(){
             let te=document.getElementById("test")
-            socketio.emit('message',{'data':te.value})
+            socketio.emit('message',{'room':lastPath,'data':te.value})
         }

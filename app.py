@@ -32,7 +32,7 @@ class User(db.Model,UserMixin):
     password=db.Column(db.String(200),nullable=False)
     img=db.Column(db.String(200),nullable=False,default='uploads/default.png')
     #publickey=db.Column(db.String(1024),nullable=False)
-    #mes=db.relationship('Message',lazy=True)
+    mes=db.relationship('Message',lazy=True)
     joined=db.relationship('Room',secondary=user_room,backref='members')
 
     def __repr__(self):
@@ -41,6 +41,14 @@ class User(db.Model,UserMixin):
 class Room(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String)
+    mes=db.relationship('Message',lazy=True)
+
+class Message(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    data=db.Column(db.String,nullable=False)
+    sender_name=db.Column(db.Integer,db.ForeignKey('user.name'),nullable=False)
+    room_id=db.Column(db.Integer,db.ForeignKey('room.id'),nullable=False)
+    time=db.Column(db.DateTime,nullable=False,default=datetime.datetime.utcnow)
 
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -48,6 +56,10 @@ class MyEncoder(json.JSONEncoder):
             return {"id": obj.id, "name": obj.name}
         elif isinstance(obj, User):
             return {"name":obj.username,"photo":obj.img}
+        elif isinstance(obj, Message):
+            time=obj.time
+            ntime=time.isoformat()
+            return {"name":obj.sender_name,"data":obj.data,"time":ntime}
         return super().default(obj)
 
 if not path.exists("yeechat-web/database.db"):
@@ -165,17 +177,19 @@ def connect_chat(js):
         room=Room.query.filter_by(id=js["chat_id"]).first()
         join_room(room)
         body_json=json.dumps(room.members,cls=MyEncoder)
-        socketiO.emit("chat_members",{"users":body_json})
+        mes_json=json.dumps(room.mes,cls=MyEncoder)
+        socketiO.emit("chat_members",{"users":body_json,"messages":mes_json})
 
 @socketiO.on('message')
-def remessage(js):
+def message(js):
     print(js['data'])
+    mes=Message(data=js['data'],sender_name=current_user.name,room_id=js['room'])
+    db.session.add(mes)
+    db.session.commit()
+    body_json=json.dumps(mes,cls=MyEncoder)
+    print(body_json)
+    socketiO.emit('message',body_json)
 
-@socketiO.on("client_message")
-def disconnect(js):
-    room=Room.query.filter_by(id=js["chat_id"]).first()
-    leave_room(room)
-    print("leave "+room.id)
 
 if __name__=='__main__':
     
