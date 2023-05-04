@@ -8,13 +8,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 </head>
 <body>
+    <form id="c">
+        <input type="text" id="user">
+        <input type="button" id="s" onclick="se()">
+    </form>
+    <script>
+    function se(){
+    const name = document.getElementById('user').value;
+        
+    var url = window.location.href;
 
-    
+// split the URL by '/'
+var parts = url.split('/');
+
+// get the last path
+var lastPath = parts[parts.length - 1];
+        const body = { name };
+        fetch('/../chats/'+lastPath+'/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          })
+          .then(response => response.json())
+          .then(data => {
+              if(data["message"]=="done"){
+                  console.log("done")
+                  
+                }else{
+                  console.log("eat shit")
+              }
+          })}</script>
     <script src="{{url_for('static',filename='connecter.js')}}">
 
     </script>
 
 <form>
+    <p>message
+    </p>
     <input type="text" id="test">
     <input type="button" onclick="sendmessage()">send</input>
 </form>

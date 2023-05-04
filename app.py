@@ -1,5 +1,6 @@
 from flask import Flask,redirect,url_for,send_file,abort
 import json
+import enc
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from flask_login import UserMixin
@@ -31,7 +32,10 @@ class User(db.Model,UserMixin):
     username=db.Column(db.String,nullable=False)
     password=db.Column(db.String(200),nullable=False)
     img=db.Column(db.String(200),nullable=False,default='uploads/default.png')
-    #publickey=db.Column(db.String(1024),nullable=False)
+    tag=db.Column(db.String,nullable=False)
+    nonce=db.Column(db.String,nullable=False)
+    privetkey=db.Column(db.String(2048),nullable=False)
+    publickey=db.Column(db.String(2048),nullable=False)
     mes=db.relationship('Message',lazy=True)
     joined=db.relationship('Room',secondary=user_room,backref='members')
 
@@ -96,7 +100,10 @@ def login():
         if user:
             if check_password_hash(user.password, passwrd):
                 login_user(user,remember=True)
-                return '{"message":"ok"}'
+                key=enc.createkey(passwrd)
+                pri=enc.decry(key, user.privetkey,user.nonce,user.tag)
+                
+                return '{"message":"ok","key":"'+pri.decode()+'"}'
             else:
                 return '{"message":"wrong"}'
         else:
@@ -109,11 +116,14 @@ def getsignup():
     username=request.json.get('username')
     passwrd=request.json.get('password')
     if User.query.filter_by(name=name).first()==None:
-        user=User(name=name,username=username,password=generate_password_hash(passwrd,method='sha256'))
+        key=enc.createkey(passwrd)
+        pri,pub=enc.creatersakey()
+        c,n,t=enc.encry(key, pri)
+        user=User(name=name,username=username,password=generate_password_hash(passwrd,method='sha256'),tag=t,nonce=n,privetkey=c,publickey=pub)
         db.session.add(user)
         db.session.commit()
         login_user(user,remember=True)
-        return '{"message":"done"}'
+        return '{"message":"done","key":"'+pri.decode()+'"}'
     else:
         return '{"message":"taken"}'
 
@@ -148,6 +158,7 @@ def available():
     body+=body_json+'}'
     return body
 
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -166,6 +177,18 @@ def chatend(url_endpoint):
     else:
         abort(403)
 
+@app.route("/chats/<url_endpoint>/add",methods=["POST"])
+@login_required
+def addmember(url_endpoint):
+    if haveperm(url_endpoint):
+        room=Room.query.filter_by(id=url_endpoint).first()
+        user=User.query.filter_by(name=request.json.get("name")).first()
+        print(request.json.get("name"))
+        user.joined.append(room)
+        db.session.commit()
+        return {"message":"done"}
+    else:
+        return {"message":"you dont have access"}
 
 @socketiO.on("connect")
 def connect(auth):
