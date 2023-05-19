@@ -10,22 +10,22 @@
         var socketio=io();
         socketio.on('connect', function() {
                 console.log('Connected to server');
+            });
           
-          
-                socketio.emit('connect_chat', {'chat_id':lastPath});
+        socketio.emit('connect_chat', {'chat_id':lastPath});
         
-                socketio.on("chat_members",function(data) {
-                        console.log('Received data:', data);
-                        console.log(data.messages)
-                        message=JSON.parse(data.messages)
-                        for(let i=0;i<message.length;i++){
-                        let chat=document.getElementById("chat")
-                        let mes=document.createElement('p')
-                        mes.innerText=message[i].name+"      "+message[i].data+"      "+message[i].time
-                        chat.appendChild(mes)
-                        }
-                    })
-        });
+        socketio.on("chat_members",function(data) {
+            console.log('Received data:', data);
+            console.log(data.messages)
+            message=JSON.parse(data.messages)
+            for(let i=0;i<message.length;i++){
+                let chat=document.getElementById("chat")
+                let mes=document.createElement('p')
+                mes.innerText=message[i].name+"      "+message[i].data+"      "+message[i].time
+                chat.appendChild(mes)
+            }
+        })
+        
         socketio.on('message',function(m){
             message=JSON.parse(m)
             let chat=document.getElementById("chat")

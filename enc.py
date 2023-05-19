@@ -30,11 +30,11 @@ def creatersakey():
 
 def encrsa(publickey, message):
     pub=rsa.PublicKey.load_pkcs1(publickey)
-    e=rsa.encrypt(message.encode(), pub)
+    e=rsa.encrypt(message, pub)
     return e
 
 def decrsa(privatekey, message):
     pri=rsa.PrivateKey._load_pkcs1_pem(privatekey)
     e=rsa.decrypt(message, pri)
-    return e.decode()
+    return e
 
